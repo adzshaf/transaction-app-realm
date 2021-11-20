@@ -14,8 +14,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {useForm, Controller} from 'react-hook-form';
 import {createTransaction} from '../repository/index';
 
-import Realm from 'realm';
-
 function CreateScreen({navigation}) {
   const {
     control,

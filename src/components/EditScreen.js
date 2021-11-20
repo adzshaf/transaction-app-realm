@@ -13,7 +13,11 @@ import {
 } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {useForm, Controller} from 'react-hook-form';
-import {getTransactionById} from '../repository/index';
+import {
+  getTransactionById,
+  editTransaction,
+  deleteTransaction,
+} from '../repository';
 
 function EditScreen({route, navigation}) {
   const {
@@ -23,10 +27,6 @@ function EditScreen({route, navigation}) {
     watch,
     formState: {errors},
   } = useForm();
-
-  const onSubmit = data => {};
-
-  const deleteTransaction = () => {};
 
   const {colors} = useTheme();
   const styles = makeStyles(colors);
@@ -58,19 +58,14 @@ function EditScreen({route, navigation}) {
   const [defaultData, setDefaultData] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
-  const onSubmit = data => {
-    let {amount, type, category, note} = data;
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'UPDATE table_transaction SET date = ?, amount = ?, type = ?, category = ?, note = ? WHERE transaction_id = ?',
-        [new Date().toISOString(), amount, type, category, note, transactionId],
-        (tx, results) => {
-          if (results.rowsAffected > 0) {
-            navigation.push('Home');
-          }
-        },
-      );
-    });
+  const onSubmit = async data => {
+    const response = await editTransaction(data, transactionId);
+    navigation.push('Home');
+  };
+
+  const deleteSubmit = async () => {
+    const response = await deleteTransaction(transactionId);
+    navigation.push('Home');
   };
 
   React.useEffect(() => {
@@ -215,7 +210,7 @@ function EditScreen({route, navigation}) {
         Save
       </Button>
 
-      <Button onPress={() => deleteTransaction()}>Delete</Button>
+      <Button onPress={() => deleteSubmit()}>Delete</Button>
     </View>
   );
 }

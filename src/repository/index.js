@@ -36,7 +36,7 @@ const createTransaction = async data => {
   if (transactions.length == 0) {
     latestId = 1;
   } else {
-    latestId = transactions[transaction.length - 1];
+    latestId = transactions[transactions.length - 1].transaction_id;
   }
 
   realm.write(() => {
@@ -48,7 +48,6 @@ const createTransaction = async data => {
       type: type,
       note: note,
     });
-    console.log(`created two tasks: ${transaction.name}`);
   });
 
   return realm.objects('transaction');
@@ -62,25 +61,30 @@ const editTransaction = async (data, transactionId) => {
 
   let {amount, type, category, note} = data;
 
-  const transactions = realm.objects('transaction');
-
-  const transaction = transactions.filtered(
-    `transaction_id = ${transactionId}`,
-  )[0];
+  const transaction = realm.objectForPrimaryKey('transaction', transactionId);
 
   realm.write(() => {
-    transaction = realm.create('transaction', {
-      transaction_id: latestId + 1,
-      date: new Date().toISOString(),
-      category: category,
-      amount: parseInt(amount),
-      type: type,
-      note: note,
-    });
-    console.log(`created two tasks: ${transaction.name}`);
+    transaction.amount = parseInt(amount);
+    transaction.type = type;
+    transaction.category = category;
+    transaction.note = note;
   });
 
   return realm.objects('transaction');
+};
+
+const deleteTransaction = async transactionId => {
+  const realm = await Realm.open({
+    path: 'myrealm',
+  });
+
+  let transaction = realm.objectForPrimaryKey('transaction', transactionId);
+
+  realm.write(() => {
+    realm.delete(transaction);
+
+    transaction = null;
+  });
 };
 
 const getTransactionById = async id => {
@@ -89,11 +93,9 @@ const getTransactionById = async id => {
     schema: [TransactionSchema],
   });
 
-  const transactions = realm.objects('transaction');
+  const transaction = realm.objectForPrimaryKey('transaction', id);
 
-  const transaction = transactions.filtered(`transaction_id = ${id}`);
-
-  return transaction[0];
+  return transaction;
 };
 
 export {
@@ -101,4 +103,5 @@ export {
   createTransaction,
   getTransactionById,
   editTransaction,
+  deleteTransaction,
 };

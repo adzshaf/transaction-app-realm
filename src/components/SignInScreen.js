@@ -6,24 +6,35 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {CLIENT_ID} from '@env';
+import {login} from '../store/auth';
+import {useDispatch} from 'react-redux';
+import app from '../shared/realmApp';
+import Realm from 'realm';
 
-const SignInScreen = () => {
+const SignInScreen = ({navigation}) => {
   const {colors} = useTheme();
   const styles = makeStyles(colors);
+  const dispatch = useDispatch();
 
   const signIn = async () => {
-    GoogleSignin.configure({
-      webClientId: CLIENT_ID,
-      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-      profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
-    });
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      const accessToken = userInfo.idToken;
-      const user = userInfo.user;
-      console.log('userinfo', userInfo);
+      const {user, serverAuthCode} = userInfo;
+      const {accessToken, idToken} = await GoogleSignin.getTokens();
+      dispatch(
+        login({
+          token: idToken,
+          email: user.email,
+          accessToken: accessToken,
+          serverAuthCode: serverAuthCode,
+        }),
+      );
+
+      const credentials = Realm.Credentials.google(userInfo.serverAuthCode);
+      await app.logIn(credentials);
+
+      navigation.navigate('Home', {});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow

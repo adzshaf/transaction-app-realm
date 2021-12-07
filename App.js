@@ -6,8 +6,16 @@ import Form from './src/components/CreateScreen';
 import EditForm from './src/components/EditScreen';
 import CustomNavigationBar from './src/components/CustomNavigationBar';
 import SignIn from './src/components/SignInScreen';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {CLIENT_ID} from '@env';
 
 const Stack = createNativeStackNavigator();
+
+GoogleSignin.configure({
+  webClientId: CLIENT_ID,
+  offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+  profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+});
 
 function App() {
   return (

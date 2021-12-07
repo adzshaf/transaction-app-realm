@@ -1,30 +1,47 @@
 import * as React from 'react';
 import {Appbar, Menu} from 'react-native-paper';
+import {logout, isLoggedIn} from '../store/auth';
+import {useDispatch, useSelector} from 'react-redux';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import app from '../shared/realmApp';
 
 function CustomNavigationBar({navigation, back}) {
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
+  const dispatch = useDispatch();
+  const loggedIn = useSelector(isLoggedIn);
+
+  const signOut = async () => {
+    try {
+      await GoogleSignin.signOut();
+      await app.currentUser.logOut();
+      dispatch(logout());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
       <Appbar.Content title="Transaction App" />
-      {!back ? (
-        <Menu
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={
-            <Appbar.Action icon="menu" color="white" onPress={openMenu} />
-          }>
+      <Menu
+        visible={visible}
+        onDismiss={closeMenu}
+        anchor={<Appbar.Action icon="menu" color="white" onPress={openMenu} />}>
+        {loggedIn ? (
+          <Menu.Item title="Sync" />
+        ) : (
           <Menu.Item
             onPress={() => {
               navigation.navigate('SignIn');
             }}
             title="Sign in"
           />
-        </Menu>
-      ) : null}
+        )}
+        {loggedIn && <Menu.Item title="Sign out" onPress={() => signOut()} />}
+      </Menu>
     </Appbar.Header>
   );
 }

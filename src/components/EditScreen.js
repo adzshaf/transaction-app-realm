@@ -19,6 +19,7 @@ import {
 } from '../repository';
 import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
+import DatePicker from 'react-native-date-picker';
 
 function EditScreen({route, navigation}) {
   const {
@@ -45,7 +46,7 @@ function EditScreen({route, navigation}) {
   };
 
   const deleteSubmit = async () => {
-    const response = await deleteTransaction(transactionId);
+    const response = await deleteTransaction(transactionId, userId);
     navigation.push('Home');
   };
 

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {
-  FAB,
-  Title,
   Text,
   Caption,
   useTheme,
@@ -41,7 +39,7 @@ function CreateScreen({navigation}) {
   return (
     <View style={styles.container}>
       <Caption>Date</Caption>
-      <View>
+      <View style={styles.row}>
         <Text onPress={() => setOpen(true)}>
           {new Date(date).toLocaleDateString('id-ID')}
         </Text>
@@ -70,26 +68,28 @@ function CreateScreen({navigation}) {
         name="date"
         defaultValue=""
       />
-      <Controller
-        control={control}
-        rules={{
-          required: true,
-        }}
-        render={({field: {onChange, onBlur, value}}) => {
-          return (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={value => onChange(value)}
-              value={value}
-              label="Amount"
-            />
-          );
-        }}
-        name="amount"
-        defaultValue=""
-      />
-      <View>
+      <View style={styles.row}>
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, onBlur, value}}) => {
+            return (
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                onChangeText={value => onChange(value)}
+                value={value}
+                label="Amount"
+              />
+            );
+          }}
+          name="amount"
+          defaultValue=""
+        />
+      </View>
+      <View style={styles.row}>
         <Caption>Type</Caption>
         <Controller
           control={control}
@@ -113,7 +113,7 @@ function CreateScreen({navigation}) {
           name="type"
         />
       </View>
-      <View>
+      <View style={styles.row}>
         <Caption>Category</Caption>
         <Controller
           control={control}
@@ -162,14 +162,19 @@ function CreateScreen({navigation}) {
         name="note"
         defaultValue=""
       />
-      <Button mode="contained" title="Submit" onPress={handleSubmit(onSubmit)}>
-        Save
-      </Button>
+      <View style={styles.row}>
+        <Button
+          mode="contained"
+          title="Submit"
+          onPress={handleSubmit(onSubmit)}>
+          Save
+        </Button>
+      </View>
     </View>
   );
 }
 
-const makeStyles = colors =>
+const makeStyles = () =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -180,16 +185,12 @@ const makeStyles = colors =>
       justifyContent: 'space-between',
     },
     row: {
-      padding: 15,
-      marginBottom: 5,
-      backgroundColor: colors.background,
+      marginBottom: 8,
+      marginTop: 8,
     },
-    fab: {
-      position: 'absolute',
-      margin: 16,
-      right: 0,
-      bottom: 0,
-      backgroundColor: colors.notification,
+    input: {
+      marginTop: 8,
+      marginBottom: 8,
     },
   });
 

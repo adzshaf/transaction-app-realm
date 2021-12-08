@@ -1,19 +1,6 @@
 import * as React from 'react';
-import {
-  View,
-  Button,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import {
-  FAB,
-  Title,
-  Text,
-  Subheading,
-  useTheme,
-  Colors,
-} from 'react-native-paper';
+import {View, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+import {FAB, Text, Subheading, useTheme, Colors} from 'react-native-paper';
 import {getAllTransactions} from '../repository/index';
 import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
@@ -43,7 +30,7 @@ function HomeScreen({navigation}) {
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('Edit', {
-                  transactionId: item._id,
+                  transactionId: item._id.toString(),
                 })
               }>
               <Subheading>

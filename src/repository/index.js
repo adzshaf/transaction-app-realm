@@ -1,10 +1,11 @@
-import Realm from 'realm';
+import Realm, {BSON} from 'realm';
 import app from '../shared/realmApp';
+import 'react-native-get-random-values';
 
 const TransactionSchema = {
   name: 'Transaction',
   properties: {
-    _id: 'int',
+    _id: 'objectId',
     _partition: 'string',
     amount: 'int',
     category: 'string',
@@ -51,18 +52,10 @@ const createTransaction = async (data, userId) => {
 
   let {amount, type, category, note, date} = data;
   let transaction;
-  const transactions = realm.objects('Transaction');
-  let latestId;
-
-  if (transactions.length == 0) {
-    latestId = 1;
-  } else {
-    latestId = transactions[transactions.length - 1].id;
-  }
 
   realm.write(() => {
     transaction = realm.create('Transaction', {
-      _id: latestId + 1,
+      _id: new BSON.ObjectId(),
       date: date.toISOString(),
       category: category,
       amount: parseInt(amount),
@@ -86,7 +79,10 @@ const editTransaction = async (data, transactionId, userId) => {
 
   let {amount, type, category, note, date} = data;
 
-  const transaction = realm.objectForPrimaryKey('Transaction', transactionId);
+  const transaction = realm.objectForPrimaryKey(
+    'Transaction',
+    new BSON.ObjectId(transactionId),
+  );
 
   realm.write(() => {
     transaction.date = date.toISOString();
@@ -107,7 +103,10 @@ const deleteTransaction = async (transactionId, userId) => {
     },
   });
 
-  let transaction = realm.objectForPrimaryKey('Transaction', transactionId);
+  let transaction = realm.objectForPrimaryKey(
+    'Transaction',
+    new BSON.ObjectId(transactionId),
+  );
 
   realm.write(() => {
     realm.delete(transaction);
@@ -125,7 +124,10 @@ const getTransactionById = async (id, userId) => {
     },
   });
 
-  const transaction = realm.objectForPrimaryKey('Transaction', id);
+  const transaction = realm.objectForPrimaryKey(
+    'Transaction',
+    new BSON.ObjectId(id),
+  );
 
   return transaction;
 };

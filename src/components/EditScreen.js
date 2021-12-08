@@ -1,8 +1,6 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {
-  FAB,
-  Title,
   Text,
   Caption,
   useTheme,
@@ -53,25 +51,10 @@ function EditScreen({route, navigation}) {
   React.useEffect(() => {
     async function fetchData() {
       const transaction = await getTransactionById(transactionId, userId);
+      setDate(new Date(transaction.date));
       setDefaultData(transaction);
     }
     fetchData();
-    // db.transaction(function (txn) {
-    //   txn.executeSql(
-    //     'SELECT * FROM table_transaction WHERE transaction_id = ?',
-    //     [transactionId],
-    //     (tx, results) => {
-    //       let temp = [];
-    //       for (let i = 0; i < results.rows.length; ++i) {
-    //         temp.push(results.rows.item(i));
-    //       }
-
-    //       if (temp.length > 0) {
-    //         setDefaultData(temp[0]);
-    //       }
-    //     },
-    //   );
-    // });
   }, []);
 
   return defaultData === null ? (
@@ -79,7 +62,7 @@ function EditScreen({route, navigation}) {
   ) : (
     <View style={styles.container}>
       <Caption>Date</Caption>
-      <View>
+      <View style={styles.row}>
         <Text onPress={() => setOpen(true)}>
           {new Date(date).toLocaleDateString('id-ID')}
         </Text>
@@ -127,7 +110,7 @@ function EditScreen({route, navigation}) {
         name="amount"
         defaultValue={defaultData.amount.toString()}
       />
-      <View>
+      <View style={styles.row}>
         <Caption>Type</Caption>
         <Controller
           control={control}
@@ -152,7 +135,7 @@ function EditScreen({route, navigation}) {
           defaultValue={defaultData.type}
         />
       </View>
-      <View>
+      <View style={styles.row}>
         <Caption>Category</Caption>
         <Controller
           control={control}
@@ -202,16 +185,23 @@ function EditScreen({route, navigation}) {
         name="note"
         defaultValue={defaultData.note}
       />
-      <Button mode="contained" title="Submit" onPress={handleSubmit(onSubmit)}>
-        Save
-      </Button>
+      <View style={styles.row}>
+        <Button
+          mode="contained"
+          title="Submit"
+          onPress={handleSubmit(onSubmit)}>
+          Save
+        </Button>
+      </View>
 
-      <Button onPress={() => deleteSubmit()}>Delete</Button>
+      <View style={styles.row}>
+        <Button onPress={() => deleteSubmit()}>Delete</Button>
+      </View>
     </View>
   );
 }
 
-const makeStyles = colors =>
+const makeStyles = () =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -222,16 +212,12 @@ const makeStyles = colors =>
       justifyContent: 'space-between',
     },
     row: {
-      padding: 15,
-      marginBottom: 5,
-      backgroundColor: colors.background,
+      marginTop: 8,
+      marginBottom: 8,
     },
-    fab: {
-      position: 'absolute',
-      margin: 16,
-      right: 0,
-      bottom: 0,
-      backgroundColor: colors.notification,
+    input: {
+      marginTop: 8,
+      marginBottom: 8,
     },
   });
 

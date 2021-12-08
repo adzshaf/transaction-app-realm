@@ -11,7 +11,6 @@ import {
   Button,
   ActivityIndicator,
 } from 'react-native-paper';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {useForm, Controller} from 'react-hook-form';
 import {
   getTransactionById,
@@ -34,31 +33,10 @@ function EditScreen({route, navigation}) {
   const styles = makeStyles(colors);
 
   const [date, setDate] = React.useState(new Date());
-  const [mode, setMode] = React.useState('date');
-  const [show, setShow] = React.useState(false);
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
-  };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
+  const [open, setOpen] = React.useState(false);
 
   const {transactionId} = route.params;
   const [defaultData, setDefaultData] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
   const userId = useSelector(getUserId);
 
   const onSubmit = async data => {
@@ -101,20 +79,34 @@ function EditScreen({route, navigation}) {
     <View style={styles.container}>
       <Caption>Date</Caption>
       <View>
-        <Text onPress={showDatepicker}>
+        <Text onPress={() => setOpen(true)}>
           {new Date(date).toLocaleDateString('id-ID')}
         </Text>
       </View>
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <DatePicker
+            modal
+            open={open}
+            date={date}
+            onConfirm={date => {
+              setOpen(false);
+              setDate(date);
+              onChange(date);
+            }}
+            onCancel={() => {
+              setOpen(false);
+            }}
+            mode="date"
+          />
+        )}
+        name="date"
+        defaultValue=""
+      />
       <Controller
         control={control}
         rules={{

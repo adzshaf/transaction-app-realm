@@ -15,16 +15,19 @@ import {
   Colors,
 } from 'react-native-paper';
 import {getAllTransactions} from '../repository/index';
+import {useSelector} from 'react-redux';
+import {getUserId} from '../store/auth';
 
 function HomeScreen({navigation}) {
   const {colors} = useTheme();
   const styles = makeStyles(colors);
 
   const [flatListItems, setFlatListItems] = React.useState([]);
+  const userId = useSelector(getUserId);
 
   React.useEffect(() => {
     async function fetchData() {
-      const transactions = await getAllTransactions();
+      const transactions = await getAllTransactions(userId);
       setFlatListItems(transactions);
     }
     fetchData();
@@ -40,7 +43,7 @@ function HomeScreen({navigation}) {
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('Edit', {
-                  transactionId: item.transaction_id,
+                  transactionId: item._id,
                 })
               }>
               <Subheading>
@@ -67,12 +70,12 @@ function HomeScreen({navigation}) {
             </TouchableOpacity>
           </View>
         )}
-        keyExtractor={item => item.transaction_id}
+        keyExtractor={item => item._id}
       />
       <FAB
         style={styles.fab}
         icon="plus"
-        onPress={() => navigation.navigate('Create')}
+        onPress={() => navigation.push('Create')}
       />
     </>
   );

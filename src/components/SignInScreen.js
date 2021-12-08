@@ -22,17 +22,19 @@ const SignInScreen = ({navigation}) => {
       const userInfo = await GoogleSignin.signIn();
       const {user, serverAuthCode} = userInfo;
       const {accessToken, idToken} = await GoogleSignin.getTokens();
+
+      const credentials = Realm.Credentials.google(userInfo.serverAuthCode);
+      const userData = await app.logIn(credentials);
+
       dispatch(
         login({
           token: idToken,
           email: user.email,
           accessToken: accessToken,
           serverAuthCode: serverAuthCode,
+          userId: userData.id,
         }),
       );
-
-      const credentials = Realm.Credentials.google(userInfo.serverAuthCode);
-      await app.logIn(credentials);
 
       navigation.navigate('Home', {});
     } catch (error) {

@@ -18,6 +18,8 @@ import {
   editTransaction,
   deleteTransaction,
 } from '../repository';
+import {useSelector} from 'react-redux';
+import {getUserId} from '../store/auth';
 
 function EditScreen({route, navigation}) {
   const {
@@ -57,9 +59,10 @@ function EditScreen({route, navigation}) {
   const {transactionId} = route.params;
   const [defaultData, setDefaultData] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  const userId = useSelector(getUserId);
 
   const onSubmit = async data => {
-    const response = await editTransaction(data, transactionId);
+    const response = await editTransaction(data, transactionId, userId);
     navigation.push('Home');
   };
 
@@ -70,7 +73,7 @@ function EditScreen({route, navigation}) {
 
   React.useEffect(() => {
     async function fetchData() {
-      const transaction = await getTransactionById(transactionId);
+      const transaction = await getTransactionById(transactionId, userId);
       setDefaultData(transaction);
     }
     fetchData();

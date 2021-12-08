@@ -13,6 +13,8 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {useForm, Controller} from 'react-hook-form';
 import {createTransaction} from '../repository/index';
+import {useSelector} from 'react-redux';
+import {getUserId} from '../store/auth';
 
 function CreateScreen({navigation}) {
   const {
@@ -23,13 +25,10 @@ function CreateScreen({navigation}) {
     formState: {errors},
   } = useForm();
 
-  const onSubmit = async data => {
-    const response = await createTransaction(data);
-    navigation.push('Home');
-  };
-
   const {colors} = useTheme();
   const styles = makeStyles(colors);
+
+  const userId = useSelector(getUserId);
 
   const [date, setDate] = React.useState(new Date());
   const [mode, setMode] = React.useState('date');
@@ -52,6 +51,11 @@ function CreateScreen({navigation}) {
 
   const showTimepicker = () => {
     showMode('time');
+  };
+
+  const onSubmit = async data => {
+    const response = await createTransaction(data, userId);
+    navigation.push('Home');
   };
 
   return (

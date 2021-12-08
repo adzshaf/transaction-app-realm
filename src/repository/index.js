@@ -1,31 +1,55 @@
 import Realm from 'realm';
+import app from '../shared/realmApp';
 
 const TransactionSchema = {
-  name: 'transaction',
+  name: 'Transaction',
   properties: {
-    transaction_id: 'int',
-    date: 'string',
-    category: 'string',
+    _id: 'int',
+    _partition: 'string',
     amount: 'int',
-    type: 'string',
+    category: 'string',
+    date: 'string',
     note: 'string?',
+    type: 'string',
   },
-  primaryKey: 'transaction_id',
+  primaryKey: '_id',
 };
 
-const getAllTransactions = async () => {
-  const realm = await Realm.open({
-    path: 'myrealm',
-    schema: [TransactionSchema],
-  });
-
-  return realm.objects('transaction');
+const OpenRealmBehaviorConfiguration = {
+  type: 'openImmediately',
 };
 
-const createTransaction = async data => {
+const getAllTransactions = async userId => {
+  console.log('hahah');
+
+  try {
+    const realm = await Realm.open({
+      schema: [TransactionSchema],
+      sync: {
+        user: app.currentUser,
+        partitionValue: userId,
+        newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+      },
+    });
+    return realm.objects('transaction');
+  } catch (err) {
+    console.log(
+      `This block should catch any
+      instantiation errors.`,
+      err,
+    );
+  }
+};
+
+const createTransaction = async (data, userId) => {
+  console.log('hihhih', app.currentUser);
   const realm = await Realm.open({
-    path: 'myrealm',
     schema: [TransactionSchema],
+    sync: {
+      user: app.currentUser,
+      partitionValue: userId,
+      newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+    },
   });
 
   let {amount, type, category, note} = data;
@@ -33,30 +57,35 @@ const createTransaction = async data => {
   const transactions = realm.objects('transaction');
   let latestId;
 
+  console.log('cuy');
   if (transactions.length == 0) {
     latestId = 1;
   } else {
-    latestId = transactions[transactions.length - 1].transaction_id;
+    latestId = transactions[transactions.length - 1].id;
   }
 
   realm.write(() => {
     transaction = realm.create('transaction', {
-      transaction_id: latestId + 1,
+      _id: latestId + 1,
       date: new Date().toISOString(),
       category: category,
       amount: parseInt(amount),
       type: type,
       note: note,
     });
+    console.log('HOHOHO', transaction);
   });
 
   return realm.objects('transaction');
 };
 
-const editTransaction = async (data, transactionId) => {
+const editTransaction = async (data, transactionId, userId) => {
   const realm = await Realm.open({
-    path: 'myrealm',
     schema: [TransactionSchema],
+    sync: {
+      user: app.currentUser,
+      partitionValue: userId,
+    },
   });
 
   let {amount, type, category, note} = data;
@@ -73,9 +102,12 @@ const editTransaction = async (data, transactionId) => {
   return realm.objects('transaction');
 };
 
-const deleteTransaction = async transactionId => {
+const deleteTransaction = async (transactionId, userId) => {
   const realm = await Realm.open({
-    path: 'myrealm',
+    sync: {
+      user: app.currentUser,
+      partitionValue: userId,
+    },
   });
 
   let transaction = realm.objectForPrimaryKey('transaction', transactionId);
@@ -87,10 +119,13 @@ const deleteTransaction = async transactionId => {
   });
 };
 
-const getTransactionById = async id => {
+const getTransactionById = async (id, userId) => {
   const realm = await Realm.open({
-    path: 'myrealm',
     schema: [TransactionSchema],
+    sync: {
+      user: app.currentUser,
+      partitionValue: userId,
+    },
   });
 
   const transaction = realm.objectForPrimaryKey('transaction', id);

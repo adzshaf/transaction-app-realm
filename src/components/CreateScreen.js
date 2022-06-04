@@ -33,7 +33,7 @@ function CreateScreen({navigation}) {
 
   const onSubmit = async data => {
     const response = await createTransaction(data, userId);
-    navigation.push('Home');
+    navigation.navigate('Home');
   };
 
   return (

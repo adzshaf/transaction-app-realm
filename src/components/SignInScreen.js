@@ -36,7 +36,7 @@ const SignInScreen = ({navigation}) => {
         }),
       );
 
-      navigation.navigate('Home', {});
+      navigation.navigate('Home');
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow

@@ -17,6 +17,7 @@ function CustomNavigationBar({navigation, back}) {
       await GoogleSignin.signOut();
       await app.currentUser.logOut();
       dispatch(logout());
+      navigation.replace('Home');
     } catch (error) {
       console.error(error);
     }

@@ -28,9 +28,12 @@ const getAllTransactions = async userId => {
         user: app.currentUser,
         partitionValue: userId,
         newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+        existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
       },
     });
-    return realm.objects('Transaction');
+
+    let transactions = realm.objects('Transaction');
+    return transactions.sorted('date', true);
   } catch (err) {
     console.log(
       `This block should catch any
@@ -47,6 +50,7 @@ const createTransaction = async (data, userId) => {
       user: app.currentUser,
       partitionValue: userId,
       newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+      existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
     },
   });
 
@@ -74,6 +78,8 @@ const editTransaction = async (data, transactionId, userId) => {
     sync: {
       user: app.currentUser,
       partitionValue: userId,
+      newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+      existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
     },
   });
 
@@ -100,6 +106,8 @@ const deleteTransaction = async (transactionId, userId) => {
     sync: {
       user: app.currentUser,
       partitionValue: userId,
+      newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+      existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
     },
   });
 
@@ -121,6 +129,8 @@ const getTransactionById = async (id, userId) => {
     sync: {
       user: app.currentUser,
       partitionValue: userId,
+      newRealmFileBehavior: OpenRealmBehaviorConfiguration,
+      existingRealmFileBehavior: OpenRealmBehaviorConfiguration,
     },
   });
 

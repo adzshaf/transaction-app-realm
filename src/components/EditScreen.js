@@ -40,12 +40,12 @@ function EditScreen({route, navigation}) {
 
   const onSubmit = async data => {
     const response = await editTransaction(data, transactionId, userId);
-    navigation.push('Home');
+    navigation.navigate('Home');
   };
 
   const deleteSubmit = async () => {
-    const response = await deleteTransaction(transactionId, userId);
-    navigation.push('Home');
+    await deleteTransaction(transactionId, userId);
+    navigation.navigate('Home');
   };
 
   React.useEffect(() => {

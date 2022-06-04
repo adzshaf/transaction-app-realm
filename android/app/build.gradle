@@ -208,6 +208,12 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
+    
+    dependencies{
+        debugImplementation 'com.facebook.stetho:stetho:1.5.1'
+        debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+    }
+
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

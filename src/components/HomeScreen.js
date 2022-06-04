@@ -4,6 +4,7 @@ import {FAB, Text, Subheading, useTheme, Colors} from 'react-native-paper';
 import {getAllTransactions} from '../repository/index';
 import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
+import {useIsFocused} from '@react-navigation/native';
 
 function HomeScreen({navigation}) {
   const {colors} = useTheme();
@@ -12,13 +13,30 @@ function HomeScreen({navigation}) {
   const [flatListItems, setFlatListItems] = React.useState([]);
   const userId = useSelector(getUserId);
 
+  const isFocused = useIsFocused();
+
   React.useEffect(() => {
     async function fetchData() {
       const transactions = await getAllTransactions(userId);
-      setFlatListItems(transactions);
+      return transactions;
     }
-    fetchData();
-  }, []);
+
+    fetchData()
+      .then(transactions => {
+        setFlatListItems([...transactions]);
+      })
+      .catch(err => console.log(err));
+
+    // try {
+    //   const transactions = fetchData();
+    //   setFlatListItems([...transactions]);
+    //   transactions.addListener(() => {
+    //     setFlatListItems([...transactions]);
+    //   });
+    // } catch (err) {
+    //   console.log('error', err);
+    // }
+  }, [isFocused]);
 
   return (
     <>
@@ -62,7 +80,7 @@ function HomeScreen({navigation}) {
       <FAB
         style={styles.fab}
         icon="plus"
-        onPress={() => navigation.push('Create')}
+        onPress={() => navigation.navigate('Create')}
       />
     </>
   );

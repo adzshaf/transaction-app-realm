@@ -10,16 +10,15 @@ import {
   ActivityIndicator,
 } from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
-import {
-  getTransactionById,
-  editTransaction,
-  deleteTransaction,
-} from '../repository';
 import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import DatePicker from 'react-native-date-picker';
+import TransactionContext, {Transaction} from '../repository/shared';
+import {BSON} from 'realm';
 
 function EditScreen({route, navigation}) {
+  const {useObject, useRealm} = TransactionContext;
+
   const {
     control,
     register,
@@ -35,27 +34,29 @@ function EditScreen({route, navigation}) {
   const [open, setOpen] = React.useState(false);
 
   const {transactionId} = route.params;
-  const [defaultData, setDefaultData] = React.useState(null);
+
+  const defaultData = useObject(Transaction, new BSON.ObjectId(transactionId));
+  const realm = useRealm();
   const userId = useSelector(getUserId);
 
-  const onSubmit = async data => {
-    const response = await editTransaction(data, transactionId, userId);
+  const onSubmit = data => {
+    let {amount, type, category, note, date} = data;
+    realm.write(() => {
+      defaultData.date = date.toISOString();
+      defaultData.amount = parseInt(amount);
+      defaultData.type = type;
+      defaultData.category = category;
+      defaultData.note = note;
+    });
     navigation.navigate('Home');
   };
 
-  const deleteSubmit = async () => {
-    await deleteTransaction(transactionId, userId);
+  const deleteSubmit = () => {
+    realm.write(() => {
+      realm.delete(defaultData);
+    });
     navigation.navigate('Home');
   };
-
-  React.useEffect(() => {
-    async function fetchData() {
-      const transaction = await getTransactionById(transactionId, userId);
-      setDate(new Date(transaction.date));
-      setDefaultData(transaction);
-    }
-    fetchData();
-  }, []);
 
   return defaultData === null ? (
     <ActivityIndicator />

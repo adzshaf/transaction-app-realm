@@ -1,10 +1,10 @@
 import * as React from 'react';
 import {View, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {FAB, Text, Subheading, useTheme, Colors} from 'react-native-paper';
-import {getAllTransactions} from '../repository/index';
 import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import {useIsFocused} from '@react-navigation/native';
+import TransactionContext, {Transaction} from '../repository/shared';
 
 function HomeScreen({navigation}) {
   const {colors} = useTheme();
@@ -13,36 +13,39 @@ function HomeScreen({navigation}) {
   const [flatListItems, setFlatListItems] = React.useState([]);
   const userId = useSelector(getUserId);
 
-  const isFocused = useIsFocused();
+  const {useQuery} = TransactionContext;
 
-  React.useEffect(() => {
-    async function fetchData() {
-      const transactions = await getAllTransactions(userId);
-      return transactions;
-    }
+  const transactions = useQuery(Transaction);
+  console.log(transactions);
 
-    fetchData()
-      .then(transactions => {
-        setFlatListItems([...transactions]);
-      })
-      .catch(err => console.log(err));
+  // React.useEffect(() => {
+  //   async function fetchData() {
+  //     const transactions = await getAllTransactions(userId);
+  //     return transactions;
+  //   }
 
-    // try {
-    //   const transactions = fetchData();
-    //   setFlatListItems([...transactions]);
-    //   transactions.addListener(() => {
-    //     setFlatListItems([...transactions]);
-    //   });
-    // } catch (err) {
-    //   console.log('error', err);
-    // }
-  }, [isFocused]);
+  //   fetchData()
+  //     .then(transactions => {
+  //       setFlatListItems([...transactions]);
+  //     })
+  //     .catch(err => console.log(err));
+
+  //   // try {
+  //   //   const transactions = fetchData();
+  //   //   setFlatListItems([...transactions]);
+  //   //   transactions.addListener(() => {
+  //   //     setFlatListItems([...transactions]);
+  //   //   });
+  //   // } catch (err) {
+  //   //   console.log('error', err);
+  //   // }
+  // }, [isFocused]);
 
   return (
     <>
       <FlatList
         style={styles.container}
-        data={flatListItems}
+        data={transactions.sorted('date', true)}
         renderItem={({item}) => (
           <View style={styles.row}>
             <TouchableOpacity

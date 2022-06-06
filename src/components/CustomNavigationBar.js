@@ -3,7 +3,8 @@ import {Appbar, Menu} from 'react-native-paper';
 import {logout, isLoggedIn} from '../store/auth';
 import {useDispatch, useSelector} from 'react-redux';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import app from '../shared/realmApp';
+// import app from '../shared/realmApp';
+import {useApp} from '@realm/react';
 
 function CustomNavigationBar({navigation, back}) {
   const [visible, setVisible] = React.useState(false);
@@ -11,6 +12,7 @@ function CustomNavigationBar({navigation, back}) {
   const closeMenu = () => setVisible(false);
   const dispatch = useDispatch();
   const loggedIn = useSelector(isLoggedIn);
+  const app = useApp();
 
   const signOut = async () => {
     try {
@@ -31,7 +33,7 @@ function CustomNavigationBar({navigation, back}) {
         visible={visible}
         onDismiss={closeMenu}
         anchor={<Appbar.Action icon="menu" color="white" onPress={openMenu} />}>
-        {loggedIn ? (
+        {app.currentUser ? (
           <Menu.Item title="Sync" />
         ) : (
           <Menu.Item
@@ -41,7 +43,9 @@ function CustomNavigationBar({navigation, back}) {
             title="Sign in"
           />
         )}
-        {loggedIn && <Menu.Item title="Sign out" onPress={() => signOut()} />}
+        {app.currentUser && (
+          <Menu.Item title="Sign out" onPress={() => signOut()} />
+        )}
       </Menu>
     </Appbar.Header>
   );

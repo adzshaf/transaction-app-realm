@@ -9,12 +9,15 @@ import {
   Button,
 } from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
-import {createTransaction} from '../repository/index';
 import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import DatePicker from 'react-native-date-picker';
+import TransactionContext, {Transaction} from '../repository/shared';
 
 function CreateScreen({navigation}) {
+  const {useRealm} = TransactionContext;
+  const realm = useRealm();
+
   const {
     control,
     register,
@@ -31,8 +34,10 @@ function CreateScreen({navigation}) {
   const [date, setDate] = React.useState(new Date());
   const [open, setOpen] = React.useState(false);
 
-  const onSubmit = async data => {
-    const response = await createTransaction(data, userId);
+  const onSubmit = data => {
+    realm.write(() => {
+      realm.create('Transaction', Transaction.generate(data, userId));
+    });
     navigation.navigate('Home');
   };
 

@@ -9,14 +9,13 @@ import {persistStore} from 'redux-persist';
 import store from './src/store/store';
 import {AppProvider, UserProvider} from '@realm/react';
 import {REALM_APP_ID} from '@env';
-import TransactionContext from './src/repository/shared';
 import SignInScreen from './src/components/SignInScreen';
 
 let persistor = persistStore(store);
 
 export default function Main() {
   return (
-    <AppProvider id={REALM_APP_ID}>
+    <AppProvider id={'transaction-realm-vyllp'}>
       <UserProvider fallback={<SignInScreen />}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>

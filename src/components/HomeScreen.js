@@ -5,6 +5,7 @@ import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import {useIsFocused} from '@react-navigation/native';
 import TransactionContext, {Transaction} from '../repository/shared';
+import {logger} from 'react-native-logs';
 
 function HomeScreen({navigation}) {
   const {colors} = useTheme();
@@ -12,11 +13,17 @@ function HomeScreen({navigation}) {
 
   const [flatListItems, setFlatListItems] = React.useState([]);
   const userId = useSelector(getUserId);
+  var log = logger.createLogger();
+  let startTime = new Date();
 
   const {useQuery} = TransactionContext;
-
   const transactions = useQuery(Transaction);
-  console.log(transactions);
+
+  console.log(transactions.sorted('date', true));
+  let endTime = new Date();
+  let costTime = (endTime - startTime) / 1000;
+
+  log.info('SYNC TIME: ' + costTime);
 
   // React.useEffect(() => {
   //   async function fetchData() {

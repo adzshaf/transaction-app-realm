@@ -13,6 +13,7 @@ import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import DatePicker from 'react-native-date-picker';
 import TransactionContext, {Transaction} from '../repository/shared';
+import {useUser} from '@realm/react';
 
 function CreateScreen({navigation}) {
   const {useRealm} = TransactionContext;
@@ -30,13 +31,14 @@ function CreateScreen({navigation}) {
   const styles = makeStyles(colors);
 
   const userId = useSelector(getUserId);
+  const user = useUser();
 
   const [date, setDate] = React.useState(new Date());
   const [open, setOpen] = React.useState(false);
 
   const onSubmit = data => {
     realm.write(() => {
-      realm.create('Transaction', Transaction.generate(data, userId));
+      realm.create('Transaction', Transaction.generate(data, user?.id));
     });
     navigation.navigate('Home');
   };

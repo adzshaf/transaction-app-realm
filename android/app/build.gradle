@@ -152,6 +152,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('adzshaf.keystore')
+            storePassword 'adzhani2510'
+            keyAlias 'adzshaf'
+            keyPassword 'adzhani2510'
+        }
     }
     buildTypes {
         debug {

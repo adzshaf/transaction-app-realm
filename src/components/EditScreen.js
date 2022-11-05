@@ -15,6 +15,8 @@ import {getUserId} from '../store/auth';
 import DatePicker from 'react-native-date-picker';
 import TransactionContext, {Transaction} from '../repository/shared';
 import {BSON} from 'realm';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
 
 function EditScreen({route, navigation}) {
   const {useObject, useRealm} = TransactionContext;
@@ -25,7 +27,7 @@ function EditScreen({route, navigation}) {
     handleSubmit,
     watch,
     formState: {errors},
-  } = useForm();
+  } = useForm({resolver: yupResolver(schema)});
 
   const {colors} = useTheme();
   const styles = makeStyles(colors);
@@ -92,6 +94,9 @@ function EditScreen({route, navigation}) {
         name="date"
         defaultValue=""
       />
+      {errors?.date?.message && (
+        <Text style={{color: colors.error}}>{errors.date.message}</Text>
+      )}
       <Controller
         control={control}
         rules={{
@@ -111,6 +116,9 @@ function EditScreen({route, navigation}) {
         name="amount"
         defaultValue={defaultData.amount.toString()}
       />
+      {errors?.amount?.message && (
+        <Text style={{color: colors.error}}>{errors.amount.message}</Text>
+      )}
       <View style={styles.row}>
         <Caption>Type</Caption>
         <Controller
@@ -135,6 +143,9 @@ function EditScreen({route, navigation}) {
           name="type"
           defaultValue={defaultData.type}
         />
+        {errors?.type?.message && (
+          <Text style={{color: colors.error}}>{errors.type.message}</Text>
+        )}
       </View>
       <View style={styles.row}>
         <Caption>Category</Caption>
@@ -168,6 +179,9 @@ function EditScreen({route, navigation}) {
           name="category"
           defaultValue={defaultData.category}
         />
+        {errors?.category?.message && (
+          <Text style={{color: colors.error}}>{errors.category.message}</Text>
+        )}
       </View>
       <Controller
         control={control}
@@ -202,7 +216,7 @@ function EditScreen({route, navigation}) {
   );
 }
 
-const makeStyles = () =>
+const makeStyles = colors =>
   StyleSheet.create({
     container: {
       flex: 1,

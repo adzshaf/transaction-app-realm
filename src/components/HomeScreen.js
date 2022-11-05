@@ -73,10 +73,7 @@ function HomeScreen({navigation}) {
                 <View>
                   <Text
                     style={{
-                      color:
-                        item.type === 'Income'
-                          ? Colors.blue900
-                          : colors.notification,
+                      color: item.type === 'Income' ? '#338BA8' : '#FF5C5C',
                     }}>
                     Amount: {item.amount}
                   </Text>
@@ -100,6 +97,8 @@ const makeStyles = colors =>
   StyleSheet.create({
     container: {
       flex: 1,
+      padding: 15,
+      backgroundColor: colors.surfaceVariant,
     },
     col: {
       flexDirection: 'row',
@@ -109,13 +108,13 @@ const makeStyles = colors =>
       padding: 15,
       marginBottom: 5,
       backgroundColor: colors.background,
+      borderRadius: 15,
     },
     fab: {
       position: 'absolute',
       margin: 16,
       right: 0,
       bottom: 0,
-      backgroundColor: colors.notification,
     },
   });
 

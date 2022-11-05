@@ -10,6 +10,10 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import TransactionContext from './src/repository/shared';
 import {useApp, useUser} from '@realm/react';
 import {ActivityIndicator} from 'react-native-paper';
+import {
+  RenderPassReport,
+  PerformanceProfiler,
+} from '@shopify/react-native-performance';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +25,10 @@ GoogleSignin.configure({
 });
 
 function App() {
+  const onReportPrepared = React.useCallback((report) => {
+    monorail.produce(convertReportToMonorailObject(report));
+  }, []);
+
   const {RealmProvider} = TransactionContext;
   const app = useApp();
   const user = useUser();
@@ -37,36 +45,38 @@ function App() {
   };
 
   return (
-    <RealmProvider sync={syncConfig} fallback={<ActivityIndicator />}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            header: props => <CustomNavigationBar {...props} />,
-          }}>
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{title: 'Home'}}
-          />
-          <Stack.Screen
-            name="Create"
-            component={Form}
-            options={{title: 'Create Transaction'}}
-          />
-          <Stack.Screen
-            name="Edit"
-            component={EditForm}
-            options={{title: 'Edit Transaction'}}
-          />
-          <Stack.Screen
-            name="SignIn"
-            component={SignIn}
-            options={{title: 'Sign in'}}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </RealmProvider>
+    <PerformanceProfiler onReportPrepared={onReportPrepared}>
+      <RealmProvider sync={syncConfig} fallback={<ActivityIndicator />}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              header: props => <CustomNavigationBar {...props} />,
+            }}>
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{title: 'Home'}}
+            />
+            <Stack.Screen
+              name="Create"
+              component={Form}
+              options={{title: 'Create Transaction'}}
+            />
+            <Stack.Screen
+              name="Edit"
+              component={EditForm}
+              options={{title: 'Edit Transaction'}}
+            />
+            <Stack.Screen
+              name="SignIn"
+              component={SignIn}
+              options={{title: 'Sign in'}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </RealmProvider>
+    </PerformanceProfiler>
   );
 }
 

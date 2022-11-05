@@ -19,7 +19,6 @@ function HomeScreen({navigation}) {
   const {useQuery} = TransactionContext;
   const transactions = useQuery(Transaction);
 
-  console.log(transactions.sorted('date', true));
   let endTime = new Date();
   let costTime = (endTime - startTime) / 1000;
 

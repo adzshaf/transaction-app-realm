@@ -19,6 +19,14 @@ import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 
 function EditScreen({route, navigation}) {
+  const schema = yup.object().shape({
+    date: yup.date(),
+    amount: yup.number().positive().integer().required('Required'),
+    type: yup.string().required('Required'),
+    category: yup.string().required('Required'),
+    note: yup.string(),
+  });
+
   const {useObject, useRealm} = TransactionContext;
 
   const {
@@ -221,6 +229,7 @@ const makeStyles = colors =>
     container: {
       flex: 1,
       padding: 15,
+      backgroundColor: colors.background,
     },
     col: {
       flexDirection: 'row',

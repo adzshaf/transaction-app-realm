@@ -1,28 +1,32 @@
 import * as React from 'react';
 import {View, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {FAB, Text, Subheading, useTheme, Colors} from 'react-native-paper';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import {useIsFocused} from '@react-navigation/native';
 import TransactionContext, {Transaction} from '../repository/shared';
 import {logger} from 'react-native-logs';
+import {endTimer, getTime} from '../store/timer';
 
 function HomeScreen({navigation}) {
+  const dispatch = useDispatch()
   const {colors} = useTheme();
   const styles = makeStyles(colors);
 
   const [flatListItems, setFlatListItems] = React.useState([]);
   const userId = useSelector(getUserId);
   var log = logger.createLogger();
-  let startTime = new Date();
 
   const {useQuery} = TransactionContext;
   const transactions = useQuery(Transaction);
 
-  let endTime = new Date();
-  let costTime = (endTime - startTime) / 1000;
+  React.useEffect(() => {
+    dispatch(endTimer())
+  }, [])
 
-  log.info('SYNC TIME: ' + costTime);
+  const time = useSelector(getTime)
+  log.info('SYNC TIME: ' + time);
+
 
   // React.useEffect(() => {
   //   async function fetchData() {

@@ -10,10 +10,6 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import TransactionContext from './src/repository/shared';
 import {useApp, useUser} from '@realm/react';
 import {ActivityIndicator} from 'react-native-paper';
-import {
-  RenderPassReport,
-  PerformanceProfiler,
-} from '@shopify/react-native-performance';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,16 +21,12 @@ GoogleSignin.configure({
 });
 
 function App() {
-  const onReportPrepared = React.useCallback((report) => {
-    monorail.produce(convertReportToMonorailObject(report));
-  }, []);
-
   const {RealmProvider} = TransactionContext;
   const app = useApp();
   const user = useUser();
 
   const OpenRealmBehaviorConfiguration = {
-    type: 'openImmediately',
+    type: 'downloadBeforeOpen',
   };
 
   const syncConfig = {
@@ -45,7 +37,7 @@ function App() {
   };
 
   return (
-    <PerformanceProfiler onReportPrepared={onReportPrepared}>
+    <>
       <RealmProvider sync={syncConfig} fallback={<ActivityIndicator />}>
         <NavigationContainer>
           <Stack.Navigator
@@ -76,7 +68,7 @@ function App() {
           </Stack.Navigator>
         </NavigationContainer>
       </RealmProvider>
-    </PerformanceProfiler>
+    </>
   );
 }
 

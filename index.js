@@ -16,15 +16,15 @@ let persistor = persistStore(store);
 export default function Main() {
   return (
     <AppProvider id={'transaction-realm-vyllp'}>
-      <UserProvider fallback={<SignInScreen />}>
-        <Provider store={store}>
+      <Provider store={store}>
+        <UserProvider fallback={<SignInScreen />}>
           <PersistGate loading={null} persistor={persistor}>
             <PaperProvider>
               <App />
             </PaperProvider>
           </PersistGate>
-        </Provider>
-      </UserProvider>
+        </UserProvider>
+      </Provider>
     </AppProvider>
   );
 }

@@ -26,7 +26,7 @@ function App() {
   const user = useUser();
 
   const OpenRealmBehaviorConfiguration = {
-    type: 'openImmediately',
+    type: 'downloadBeforeOpen',
   };
 
   const syncConfig = {
@@ -37,36 +37,38 @@ function App() {
   };
 
   return (
-    <RealmProvider sync={syncConfig} fallback={<ActivityIndicator />}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            header: props => <CustomNavigationBar {...props} />,
-          }}>
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{title: 'Home'}}
-          />
-          <Stack.Screen
-            name="Create"
-            component={Form}
-            options={{title: 'Create Transaction'}}
-          />
-          <Stack.Screen
-            name="Edit"
-            component={EditForm}
-            options={{title: 'Edit Transaction'}}
-          />
-          <Stack.Screen
-            name="SignIn"
-            component={SignIn}
-            options={{title: 'Sign in'}}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </RealmProvider>
+    <>
+      <RealmProvider sync={syncConfig} fallback={<ActivityIndicator />}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              header: props => <CustomNavigationBar {...props} />,
+            }}>
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{title: 'Home'}}
+            />
+            <Stack.Screen
+              name="Create"
+              component={Form}
+              options={{title: 'Create Transaction'}}
+            />
+            <Stack.Screen
+              name="Edit"
+              component={EditForm}
+              options={{title: 'Edit Transaction'}}
+            />
+            <Stack.Screen
+              name="SignIn"
+              component={SignIn}
+              options={{title: 'Sign in'}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </RealmProvider>
+    </>
   );
 }
 

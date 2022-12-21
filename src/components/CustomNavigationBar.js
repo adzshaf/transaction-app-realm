@@ -32,7 +32,7 @@ function CustomNavigationBar({navigation, back}) {
       <Menu
         visible={visible}
         onDismiss={closeMenu}
-        anchor={<Appbar.Action icon="menu" color="white" onPress={openMenu} />}>
+        anchor={<Appbar.Action icon="menu" onPress={openMenu} />}>
         {app.currentUser ? (
           <Menu.Item title="Sync" />
         ) : (

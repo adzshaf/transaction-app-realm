@@ -13,8 +13,19 @@ import {useSelector} from 'react-redux';
 import {getUserId} from '../store/auth';
 import DatePicker from 'react-native-date-picker';
 import TransactionContext, {Transaction} from '../repository/shared';
+import {useUser} from '@realm/react';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
 
 function CreateScreen({navigation}) {
+  const schema = yup.object().shape({
+    date: yup.date(),
+    amount: yup.number().positive().integer().required('Required'),
+    type: yup.string().required('Required'),
+    category: yup.string().required('Required'),
+    note: yup.string(),
+  });
+
   const {useRealm} = TransactionContext;
   const realm = useRealm();
 
@@ -24,19 +35,20 @@ function CreateScreen({navigation}) {
     handleSubmit,
     watch,
     formState: {errors},
-  } = useForm();
+  } = useForm({resolver: yupResolver(schema)});
 
   const {colors} = useTheme();
   const styles = makeStyles(colors);
 
   const userId = useSelector(getUserId);
+  const user = useUser();
 
   const [date, setDate] = React.useState(new Date());
   const [open, setOpen] = React.useState(false);
 
   const onSubmit = data => {
     realm.write(() => {
-      realm.create('Transaction', Transaction.generate(data, userId));
+      realm.create('Transaction', Transaction.generate(data, user?.id));
     });
     navigation.navigate('Home');
   };
@@ -73,6 +85,9 @@ function CreateScreen({navigation}) {
         name="date"
         defaultValue=""
       />
+      {errors?.date?.message && (
+        <Text style={{color: colors.error}}>{errors.date.message}</Text>
+      )}
       <View style={styles.row}>
         <Controller
           control={control}
@@ -87,12 +102,16 @@ function CreateScreen({navigation}) {
                 onChangeText={value => onChange(value)}
                 value={value}
                 label="Amount"
+                keyboardType="number-pad"
               />
             );
           }}
           name="amount"
           defaultValue=""
         />
+        {errors?.amount?.message && (
+          <Text style={{color: colors.error}}>{errors.amount.message}</Text>
+        )}
       </View>
       <View style={styles.row}>
         <Caption>Type</Caption>
@@ -117,6 +136,9 @@ function CreateScreen({navigation}) {
           )}
           name="type"
         />
+        {errors?.type?.message && (
+          <Text style={{color: colors.error}}>{errors.type.message}</Text>
+        )}
       </View>
       <View style={styles.row}>
         <Caption>Category</Caption>
@@ -149,6 +171,9 @@ function CreateScreen({navigation}) {
           )}
           name="category"
         />
+        {errors?.category?.message && (
+          <Text style={{color: colors.error}}>{errors.category.message}</Text>
+        )}
       </View>
       <Controller
         control={control}
@@ -179,11 +204,12 @@ function CreateScreen({navigation}) {
   );
 }
 
-const makeStyles = () =>
+const makeStyles = colors =>
   StyleSheet.create({
     container: {
       flex: 1,
       padding: 15,
+      backgroundColor: colors.background,
     },
     col: {
       flexDirection: 'row',

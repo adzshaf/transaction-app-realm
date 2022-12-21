@@ -10,11 +10,12 @@ import {useDispatch} from 'react-redux';
 // import app from '../shared/realmApp';
 import Realm from 'realm';
 import {useApp} from '@realm/react';
+import {startTimer} from '../store/timer';
 
 const SignInScreen = ({navigation}) => {
   const {colors} = useTheme();
   const styles = makeStyles(colors);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const app = useApp();
 
   const signIn = async () => {
@@ -27,16 +28,7 @@ const SignInScreen = ({navigation}) => {
       const credentials = Realm.Credentials.google(userInfo.serverAuthCode);
       const userData = await app.logIn(credentials);
 
-      // dispatch(
-      //   login({
-      //     token: idToken,
-      //     email: user.email,
-      //     accessToken: accessToken,
-      //     serverAuthCode: serverAuthCode,
-      //     userId: userData.id,
-      //   }),
-      // );
-
+      dispatch(startTimer())
       navigation.navigate('Home');
     } catch (error) {
       console.log(error);
